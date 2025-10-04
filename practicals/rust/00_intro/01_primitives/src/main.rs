@@ -4,23 +4,19 @@
 // Complete the functions below and run `px` to check your work.
 
 fn get_integer() -> i32 {
-    // TODO: return any integer value
-    unimplemented!()
+    // TODO: return 42 integer32 from this function
 }
 
 fn get_float() -> f64 {
-    // TODO: return any floating point value
-    unimplemented!()
+    // TODO: return 3.14 float64 from this function
 }
 
 fn get_boolean() -> bool {
-    // TODO: return either true or false
-    unimplemented!()
+    // TODO: return true boolean
 }
 
 fn get_character() -> char {
-    // TODO: return any character
-    unimplemented!()
+    // TODO: return R char from this function
 }
 
 // ----------------- Tests -----------------

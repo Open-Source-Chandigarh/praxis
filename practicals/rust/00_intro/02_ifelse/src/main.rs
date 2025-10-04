@@ -5,12 +5,10 @@
 
 fn is_positive(n: i32) -> bool {
     // TODO: return true if n is positive, false otherwise
-    unimplemented!()
 }
 
 fn max_of_two(a: i32, b: i32) -> i32 {
     // TODO: return the bigger of a and b using if-else
-    unimplemented!()
 }
 
 fn grade(score: u32) -> &'static str {
@@ -19,7 +17,6 @@ fn grade(score: u32) -> &'static str {
     // "B" if score >= 75
     // "C" if score >= 50
     // "F" otherwise
-    unimplemented!()
 }
 
 // ----------------- Tests -----------------
