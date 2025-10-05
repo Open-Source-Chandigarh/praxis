@@ -19,9 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⚙️ Install Zola
-        run: |
-          wget -qO- https://github.com/getzola/zola/releases/latest/download/zola.tar.gz | tar xzf -
-          sudo mv zola /usr/local/bin/
+        uses: shalzz/zola-deploy-action@master
 
       - name: 🧱 Build Zola site
         working-directory: ./books
