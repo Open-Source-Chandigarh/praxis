@@ -15,4 +15,4 @@ pub mod run_test;
 pub mod status;
 
 // Re-export commonly used items for easier access
-pub use indexer::indexer::{Exercise, Exercises, exercises,checkpassed};
+pub use indexer::indexer::{Exercise, Exercises, exercises};

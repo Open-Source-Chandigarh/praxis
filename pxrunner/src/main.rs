@@ -1,4 +1,4 @@
-use pxrunner::{Exercise, exercises,checkpassed};
+use pxrunner::{Exercise, exercises};
 
 fn main() {
     println!("Welcome to PX Runner!");
