@@ -4,11 +4,11 @@ use std::{collections::HashMap, env, fs::{self, DirEntry}, io::{self, Error, Err
 #[derive(Debug,Default)]
 #[warn(dead_code)]
 pub struct Exercise{
-    name:String,
-    passed:bool,
-    language:String,
-    parentmodule:String,
-    path:String
+    pub name:String,
+    pub passed:bool,
+    pub language:String,
+    pub parentmodule:String,
+    pub path:String
 }
 #[derive(Debug,Default)]
 pub struct Exercises{
@@ -27,6 +27,40 @@ impl Exercises{
         self.questions.push(question);
 
     }
+    pub fn updatestatus(&mut self,name:String,language:String,parentmodule:String,path:String,status:bool){
+        for question in &mut self.questions {
+            if question.name == name
+                && question.language == language
+                && question.parentmodule == parentmodule
+                && question.path == path
+            {
+                question.passed = status;
+                let key = format!("{}/{}", parentmodule, name);
+                 if let Some(bool) = self.passed.get_mut(&key) {
+                 *bool = status; 
+                }
+                if let Ok(db_content) = fs::read_to_string("./db.txt") {
+                    let key = format!("{}/{}", parentmodule, name);
+                    let mut new_content = String::new();
+                    for line in db_content.lines() {
+                        let mut parts = line.splitn(2, ' ');
+                        if let (Some(db_key), Some(_)) = (parts.next(), parts.next()) {
+                            if db_key == key {
+                                new_content.push_str(&format!("{} {}\n", db_key, status));
+                            } else {
+                                new_content.push_str(&format!("{}\n", line));
+                            }
+                        } else {
+                            new_content.push_str(&format!("{}\n", line));
+                        }
+                    }
+                    let _ = fs::write("./db.txt", new_content);
+                }
+                break;
+            }
+        }
+    }
+    
 }
 fn fetch_remote_db(lang: &str) -> Result<String, Box<dyn std::error::Error>> {
     let url = format!(
@@ -114,6 +148,8 @@ pub fn exercises() -> Result<Vec<Exercise>, std::io::Error> {
             }
         }
     }
+    
+    allquestions.updatestatus("00_print".to_string(), "rust".to_string(), "00_intro".to_string(), "./00_intro/00_print".to_string(), true);
 
     Ok(allquestions.questions)
 }
