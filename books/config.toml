@@ -3,7 +3,8 @@ base_url = "https://example.com"
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
-
+title="Praxis"
+theme="goyo"
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = true
 
@@ -14,3 +15,23 @@ highlight_code = true
 
 [extra]
 # Put all your custom variables here
+
+# Navigation configuration required by Goyo theme
+nav = [
+    { name = "Home", url = "/", type = "url", icon = "fa-solid fa-home" },
+    { name = "Introduction", url = "/introduction/", type = "url", icon = "fa-solid fa-book" },
+    { name = "Contributing", url = "https://github.com/Open-Source-Chandigarh/praxis/issues", type = "url", icon = "fa-solid fa-pen-nib" },
+    { name = "GitHub", url = "https://github.com/Open-Source-Chandigarh/praxis", type = "url", icon = "fa-brands fa-github" },
+]
+
+# Site author
+author = "Praxis Team"
+
+# Site description
+description = "Interactive learning platform for programming languages"
+
+# Logo text
+logo_text = "Praxis"
+
+# Footer HTML
+footer_html = "Powered by <a href='https://www.getzola.org'>Zola</a> and <a href='https://github.com/hahwul/goyo'>Goyo</a>"
