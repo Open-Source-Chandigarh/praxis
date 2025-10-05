@@ -1,5 +1,5 @@
 pub mod indexer{
-use std::{env, fs::{self, DirEntry}, io};
+use std::{collections::HashMap, env, fs::{self, DirEntry}, io};
 #[derive(Debug,Default)]
 #[warn(dead_code)]
 pub struct Exercise{
@@ -11,7 +11,8 @@ pub struct Exercise{
 }
 #[derive(Debug,Default)]
 pub struct Exercises{
-    pub questions:Vec<Exercise>
+    pub questions:Vec<Exercise>,
+    pub passed:HashMap<String,bool>
 }
 impl Exercises{
     fn add(&mut self,name:String,passed:bool,language:String,parentmodule:String,path:String){
@@ -52,6 +53,9 @@ fn makeexercise(dir:&DirEntry,allquestions:&mut Exercises){
             }
         }
                    
+}
+pub fn checkpassed(){
+    
 }
 pub fn exercises() -> Result<Vec<Exercise>, std::io::Error> {
     let mut allquestions = Exercises::default();
