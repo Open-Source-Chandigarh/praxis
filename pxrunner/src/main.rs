@@ -1,3 +1,7 @@
+use pxrunner::{Exercise, exercises};
+
 fn main() {
-    println!("Hello, world!");
+    println!("Welcome to PX Runner!");
+    let allquestion = exercises().unwrap();
+    println!("{:?}",allquestion);
 }
