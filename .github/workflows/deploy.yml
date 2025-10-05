@@ -1,14 +1,12 @@
-name: Deploy Zola site from books/ to GitHub Pages
+name: Deploy Zola site (books folder) to GitHub Pages
 
 on:
   push:
     branches:
-      - main  # Run only when changes are pushed or merged into main
+      - main  # Deploy when main branch is updated
 
 permissions:
-  contents: write      # allow writing to gh-pages branch
-  pages: write
-  id-token: write
+  contents: write  # Required for deploying to gh-pages
 
 jobs:
   build-deploy:
@@ -19,7 +17,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⚙️ Install Zola
-        uses: shalzz/zola-deploy-action@master
+        run: |
+          # Fetch latest Zola version from GitHub releases
+          ZOLA_VERSION=$(curl -s https://api.github.com/repos/getzola/zola/releases/latest | grep tag_name | cut -d '"' -f 4)
+          echo "Installing Zola version ${ZOLA_VERSION}"
+          
+          # Download Linux binary
+          curl -L "https://github.com/getzola/zola/releases/download/${ZOLA_VERSION}/zola-${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz" -o zola.tar.gz
+          
+          # Extract and install
+          tar -xzf zola.tar.gz
+          sudo mv zola /usr/local/bin/
+          zola --version
 
       - name: 🧱 Build Zola site
         working-directory: ./books
@@ -29,5 +38,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./books/public
           publish_branch: gh-pages
+          publish_dir: ./books/public
