@@ -1,66 +1,35 @@
-name: Deploy Zola Site to GitHub Pages
+name: Deploy Zola site from books/ to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
-    types: [closed]
+    branches:
+      - main  # Run only when changes are pushed or merged into main
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write      # allow writing to gh-pages branch
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  # Build job
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: 🛒 Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
-      - name: Setup Zola
-        uses: taiki-e/install-action@v2
-        with:
-          tool: zola@0.18.0
-
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v4
-
-      - name: Build with Zola
+      - name: ⚙️ Install Zola
         run: |
-          cd books
-          zola build --base-url "${{ steps.pages.outputs.base_url }}"
+          wget -qO- https://github.com/getzola/zola/releases/latest/download/zola.tar.gz | tar xzf -
+          sudo mv zola /usr/local/bin/
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+      - name: 🧱 Build Zola site
+        working-directory: ./books
+        run: zola build
+
+      - name: 🚀 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: ./books/public
-
-  # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    # Only deploy on push to main or when PR is merged
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./books/public
+          publish_branch: gh-pages
