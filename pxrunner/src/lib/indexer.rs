@@ -38,19 +38,19 @@ fn getlanguagename() -> Result<String,io::Error>{
 }
 fn makeexercise(dir:&DirEntry,allquestions:&mut Exercises){
      if let Ok(subentries) =fs::read_dir(dir.path()){
-                        for subentry in subentries{
-                            if let Ok(subdirs) = subentry{
-                                if let Ok(questions) = subdirs.file_type(){
-                                    if !questions.is_file(){
-                                        let questionname =subdirs.file_name().to_string_lossy().into_owned();
-                                        println!("{}",questionname);
-                                            let modulename =dir.file_name().to_string_lossy().into_owned();
-                                            let exercise = allquestions.add(questionname.clone(), false, getlanguagename().unwrap().clone(), modulename.clone(),  format!("./{}/{}", modulename, questionname));            
-                                    }
-                                }
-                            }
+            for subentry in subentries{
+                if let Ok(subdirs) = subentry{
+                    if let Ok(questions) = subdirs.file_type(){
+                        if !questions.is_file(){
+                            let questionname =subdirs.file_name().to_string_lossy().into_owned();
+                            println!("{}",questionname);
+                                let modulename =dir.file_name().to_string_lossy().into_owned();
+                                let exercise = allquestions.add(questionname.clone(), false, getlanguagename().unwrap().clone(), modulename.clone(),  format!("./{}/{}", modulename, questionname));            
                         }
                     }
+                }
+            }
+        }
                    
 }
 pub fn exercises() -> Result<Vec<Exercise>, std::io::Error> {
