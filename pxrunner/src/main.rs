@@ -1,8 +1,6 @@
 use pxrunner::{Exercise, exercises};
-use pxrunner::{app_logic, cli, github_implementations, github_traits};
+use pxrunner::gitcommands::{app, cli, traits, implementations};
 
 fn main() {
-    println!("Welcome to PX Runner!");
-    let allquestion = exercises().unwrap();
-    println!("{:?}", allquestion);
+    app::run();
 }

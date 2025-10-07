@@ -100,7 +100,7 @@ pub mod cli {
     }
 }
 
-pub mod github_traits {
+pub mod traits {
     use super::cli::{Langs, Pxcommands};
 
     //whenever we have to setup the exercises we require 2 things ,
@@ -141,11 +141,9 @@ pub mod github_traits {
     }
 }
 
-pub mod github_implementations {
+pub mod implementations {
     use super::cli::{Langs, Pxcommands};
-    use super::github_traits::{
-        ExercisesSetup, InstallExercises, LanguageDependencies, SystemCommands,
-    };
+    use super::traits::{ExercisesSetup, InstallExercises, LanguageDependencies, SystemCommands};
     use std::env::set_current_dir;
     use std::path::Path;
     use std::process::Command;
@@ -269,40 +267,75 @@ pub mod github_implementations {
         // Todo Add the code for downloading rustup in windows
         fn install_rust() -> Result<bool, String> {
             // --- 1. CHECK FOR RUSTUP ---
-            let output = Command::new("rustup")
-                .arg("--version")
-                .output()
-                .map_err(|e| format!("Failed to execute 'rustup': {}", e))?;
+            let output = Command::new("rustup").arg("--version").output();
 
-            if output.status.success() {
-                println!("✅ rustup is already installed.");
-                return Ok(true);
+            match output {
+                Ok(output) if output.status.success() => {
+                    println!("✅ rustup is already installed.");
+                    return Ok(true);
+                }
+                Ok(_) | Err(_) => {
+                    // rustup command failed or not found - continue to installation
+                    println!("❌ rustup not found. Attempting installation...");
+                }
             }
 
-            // --- 2. INSTALL RUSTUP (If check failed) ---
-            println!("❌ rustup not found. Attempting installation...");
-
-            let install_output = if cfg!(target_os = "windows") {
+            // --- 2. INSTALL RUSTUP (with real-time output) ---
+            if cfg!(target_os = "windows") {
                 return Err("Windows rustup installation not implemented yet".to_string());
-            } else {
-                Command::new("sh")
-                    .arg("-c")
-                    .arg("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh")
-                    .output()
-                    .map_err(|e| format!("Failed to start rustup installation script: {}", e))?
-            };
+            }
+
+            println!("🔄 Starting rustup installation...");
+
+            // Use .status() instead of .output() to show real-time output
+            let install_status = Command::new("sh")
+                .arg("-c")
+                .arg("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y")
+                .status()
+                .map_err(|e| format!("Failed to start rustup installation script: {}", e))?;
 
             // --- 3. CHECK INSTALLATION RESULT ---
-            if install_output.status.success() {
-                println!("✅ rustup installation successful.");
-                // Fix: Proper error handling for UTF-8 conversion
-                let stdout = String::from_utf8_lossy(&install_output.stdout);
-                println!("Installer Output:\n{}", stdout);
-                Ok(true)
+            if install_status.success() {
+                println!("✅ rustup installation completed.");
+
+                // --- 4. VERIFY INSTALLATION (Docker-compatible) ---
+                let verify_commands = vec![
+                    "~/.cargo/bin/rustup --version",
+                    "$HOME/.cargo/bin/rustup --version",
+                    ". ~/.cargo/env && rustup --version",
+                    ". $HOME/.cargo/env && rustup --version",
+                    "export PATH=\"$HOME/.cargo/bin:$PATH\" && rustup --version",
+                ];
+
+                let mut verification_successful = false;
+
+                for cmd in verify_commands {
+                    let verify_output = Command::new("sh").arg("-c").arg(cmd).output();
+
+                    match verify_output {
+                        Ok(output) if output.status.success() => {
+                            println!("✅ rustup verification successful.");
+                            verification_successful = true;
+                            break;
+                        }
+                        _ => continue,
+                    }
+                }
+
+                if verification_successful {
+                    Ok(true)
+                } else {
+                    // If verification fails, still consider installation successful
+                    // since the installer reported success
+                    println!("⚠️  rustup installed but verification failed.");
+                    println!(
+                        "💡 You may need to restart your shell or source ~/.cargo/env manually."
+                    );
+                    Ok(true)
+                }
             } else {
-                let stderr = String::from_utf8_lossy(&install_output.stderr);
                 eprintln!("❌ rustup installation failed.");
-                Err(format!("Installer stderr:\n{}", stderr))
+                Err("rustup installation process failed".to_string())
             }
         }
     }
@@ -417,9 +450,9 @@ pub mod github_implementations {
     }
 }
 
-pub mod app_logic {
+pub mod app{
     use super::cli::{Args, CliArgs, Langs, Pxcommands};
-    use super::github_traits::{InstallExercises, SystemCommands};
+    use super::traits::{InstallExercises, SystemCommands};
     use clap::Parser;
 
     pub fn run() {
@@ -445,9 +478,4 @@ pub mod app_logic {
             }
         }
     }
-}
-
-//main function implementation.
-fn main() {
-    app_logic::run();
 }
