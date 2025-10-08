@@ -1,0 +1,3 @@
+[submodule "books/themes/goyo"]
+	path = books/themes/goyo
+	url = https://github.com/hahwul/goyo
