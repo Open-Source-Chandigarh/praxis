@@ -104,8 +104,9 @@ fn getlanguagename() -> Result<String,io::Error>{
   };
   languagename
 }
+
 fn makeexercise(dir:&DirEntry,allquestions:&mut Exercises){
-     if let Ok(subentries) =fs::read_dir(dir.path()){
+     if let Ok(subentries) = fs::read_dir(dir.path()){
         for subentry in subentries{
             if let Ok(subdirs) = subentry{
                 if let Ok(questions) = subdirs.file_type(){
@@ -121,7 +122,6 @@ fn makeexercise(dir:&DirEntry,allquestions:&mut Exercises){
             }
         }
     }
-                   
 }
 pub fn exercises() -> Result<Vec<Exercise>, std::io::Error> {
     let mut allquestions = Exercises::default();
