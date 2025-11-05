@@ -450,7 +450,7 @@ pub mod implementations {
     }
 }
 
-pub mod app{
+pub mod app {
     use super::cli::{Args, CliArgs, Langs, Pxcommands};
     use super::traits::{InstallExercises, SystemCommands};
     use clap::Parser;

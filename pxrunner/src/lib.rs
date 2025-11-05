@@ -17,5 +17,8 @@ pub mod status;
 #[path = "lib/github.rs"]
 pub mod gitcommands;
 
+#[path = "lib/modindex.rs"]
+pub mod indexerv2;
+
 // Re-export commonly used items for easier access
 pub use indexer::indexer::{Exercise, Exercises, exercises};
